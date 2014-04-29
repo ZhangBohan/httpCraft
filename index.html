@@ -5,6 +5,8 @@
     <title>API Talk</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+
     <script src="js/lib/jquery.min.js"></script>
     <script src="js/lib/bootstrap.min.js"></script>
     <script src="js/lib/angular.js"></script>
@@ -28,10 +30,10 @@
     <div class="container" ng-controller="APICtrl">
         <div class="well-sm">
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    Panel Heading
+                <div class="panel-heading" ng-click="requestIsCollapsed = !requestIsCollapsed">
+                    API Request
                 </div>
-                <div class="panel-body">
+                <div class="panel-body" ng-show="requestIsCollapsed">
                     Regular web pages can use the XMLHttpRequest object to send and receive data from remote servers,
                     but they're limited by the same origin policy. Extensions aren't so limited. An extension
                     can talk to remote servers outside of its origin,
@@ -40,40 +42,49 @@
                 <div class="list-group">
 
                     <div class="list-group-item">
-                        <form class="form-horizontal" role="form">
+                        <form class="form-horizontal" role="form" ng-submit="send();">
                             <div class="form-group">
                                 <div class="col-sm-12">
                                     <div class="input-group">
                                         <div class="input-group-btn">
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">GET
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                                {{requestMethod}}
                                                 <span class="caret"></span></button>
                                             <ul class="dropdown-menu">
-                                                <li><a href="#">POST</a></li>
-                                                <li><a href="#">PUT</a></li>
-                                                <li><a href="#">DELETE</a></li>
+                                                <li ng-repeat="method in requestMethods" ng-if="method != requestMethod">
+                                                    <a ng-click="changeMethod(method);">{{method}}</a>
+                                                </li>
                                             </ul>
                                         </div><!-- /btn-group -->
-                                        <input ng-model="url" class="form-control" placeholder="Enter request URL here...">
+                                        <input ng-model="url" class="form-control" placeholder="Enter request URL here..." autofocus>
                                     </div><!-- /input-group -->
+                                </div>
+                            </div>
+                            <div class="form-group" ng-if="requestMethod == 'GET'">
+                                <div class="col-sm-6">
+                                    <input class="form-control" placeholder="key">
+                                </div>
+                                <div class="col-sm-6">
+                                    <input class="form-control" placeholder="value">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-12">
-                                    <a class="btn btn-primary" ng-click="getUrl();">Send</a>
+                                    <button class="btn btn-primary" id="btn-send" data-loading-text="Loading..." type="submit">Send</button>
                                     <button class="btn btn-success">Save</button>
 
-                                    <button class="btn btn-info pull-right">Share</button>
+                                    <!--<button class="btn btn-info pull-right">Share</button>-->
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-            <div class="panel panel-default" ng-if="headers">
+            <div class="panel panel-default" ng-if="headers" ng-click="headerIsCollapsed = !headerIsCollapsed">
                 <div class="panel-heading">
                     Headers
                 </div>
-                <div class="panel-body">
+                <div class="panel-body" ng-show="headerIsCollapsed">
                     <ul class="list-unstyled">
                         <li ng-repeat="(key, value) in headers">
                             {{key}} --> {{value}}
@@ -83,7 +94,8 @@
             </div>
             <div class="panel panel-default" ng-if="result">
                 <div class="panel-heading">
-                    Result<span class="label label-default">{{status}}</span>
+                    <span class="label label-success" ng-if="status == 200">{{status}}</span>
+                    <span class="label label-danger" ng-if="status != 200">{{status}}</span>
                 </div>
                 <div class="panel-body">
                     <pre>{{result | json}}</pre>
