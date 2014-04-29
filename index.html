@@ -2,9 +2,16 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title>API Talk</title>
+    <script src="angular.js"></script>
 </head>
-<body>
-    <h1>Hello World</h1>
+<body ng-app ng-csp>
+    <h1>Hello World!</h1>
+    <div ng-controller="APICtrl">
+        <input ng-model="url">
+        <button ng-click="getUrl();">GET</button>
+        <textarea ng-model="result"></textarea>
+    </div>
+    <script src="controller.js"></script>
 </body>
 </html>
