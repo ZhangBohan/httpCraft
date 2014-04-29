@@ -5,11 +5,12 @@
     <title>API Talk</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <script src="js/lib/angular.js"></script>
     <script src="js/lib/jquery.min.js"></script>
     <script src="js/lib/bootstrap.min.js"></script>
+    <script src="js/lib/angular.js"></script>
+    <script src="js/lib/ui-bootstrap.min.js"></script>
 </head>
-<body ng-app ng-csp>
+<body ng-app="apiTalk" ng-csp>
     <nav class="navbar navbar-inverse" role="navigation">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -66,15 +67,28 @@
                             </div>
                         </form>
                     </div>
-
-                    <div class="list-group-item" ng-if="result">
-                        <pre>
-                            {{result}}
-                        </pre>
-                    </div>
                 </div>
             </div>
-
+            <div class="panel panel-default" ng-if="headers">
+                <div class="panel-heading">
+                    Headers
+                </div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                        <li ng-repeat="(key, value) in headers">
+                            {{key}} --> {{value}}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel panel-default" ng-if="result">
+                <div class="panel-heading">
+                    Result<span class="label label-default">{{status}}</span>
+                </div>
+                <div class="panel-body">
+                    <pre>{{result | json}}</pre>
+                </div>
+            </div>
         </div>
     </div>
     <script src="js/src/controller.js"></script>
