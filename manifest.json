@@ -1,10 +1,10 @@
 {
     "manifest_version": 2,
-    "name": "My first app",
-    "version": "1",
+    "name": "API Talk",
+    "version": "0.1",
     "app": {
         "background": {
-            "scripts": ["main.js"]
+            "scripts": ["js/main.js"]
         }
     },
     "permissions": [

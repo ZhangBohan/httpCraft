@@ -3,15 +3,80 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>API Talk</title>
-    <script src="angular.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <script src="js/lib/angular.js"></script>
+    <script src="js/lib/jquery.min.js"></script>
+    <script src="js/lib/bootstrap.min.js"></script>
 </head>
 <body ng-app ng-csp>
-    <h1>Hello World!</h1>
-    <div ng-controller="APICtrl">
-        <input ng-model="url">
-        <button ng-click="getUrl();">GET</button>
-        <textarea ng-model="result"></textarea>
+    <nav class="navbar navbar-inverse" role="navigation">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">API Talk</a>
+            </div>
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div class="container" ng-controller="APICtrl">
+        <div class="well-sm">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Panel Heading
+                </div>
+                <div class="panel-body">
+                    Regular web pages can use the XMLHttpRequest object to send and receive data from remote servers,
+                    but they're limited by the same origin policy. Extensions aren't so limited. An extension
+                    can talk to remote servers outside of its origin,
+                    as long as it first requests cross-origin permissions.
+                </div>
+                <div class="list-group">
+
+                    <div class="list-group-item">
+                        <form class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <div class="input-group">
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">GET
+                                                <span class="caret"></span></button>
+                                            <ul class="dropdown-menu">
+                                                <li><a href="#">POST</a></li>
+                                                <li><a href="#">PUT</a></li>
+                                                <li><a href="#">DELETE</a></li>
+                                            </ul>
+                                        </div><!-- /btn-group -->
+                                        <input ng-model="url" class="form-control" placeholder="Enter request URL here...">
+                                    </div><!-- /input-group -->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <a class="btn btn-primary" ng-click="getUrl();">Send</a>
+                                    <button class="btn btn-success">Save</button>
+
+                                    <button class="btn btn-info pull-right">Share</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="list-group-item" ng-if="result">
+                        <pre>
+                            {{result}}
+                        </pre>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
-    <script src="controller.js"></script>
+    <script src="js/src/controller.js"></script>
 </body>
 </html>
