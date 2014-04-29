@@ -6,27 +6,25 @@ apiTalk.controller('APICtrl', function($scope, $http) {
     $scope.requestMethod = 'GET';
 
     $scope.url = 'http://guides.appchina.com/guide/apps/4';
-    $scope.requestParams = [];
+    $scope.radioModel = 'Raw';
 
     $scope.send = function() {
         $('#btn-send').button('loading');
         console.debug('url:', $scope.url);
         $http({method: $scope.requestMethod, url: $scope.url, config: {
 
-        }}).success(function(data, status, headers, config) {
+        }}).success(function(data, status, headers) {
             console.log('data:', data);
             console.log('status:', status);
             console.log('headers:', headers());
-            console.log('config:', config);
             $scope.result = data;
             $scope.headers = headers();
             $scope.status = status;
             $('#btn-send').button('reset');
-        }).error(function(data, status, headers, config) {
+        }).error(function(data, status, headers) {
             console.log('data:', data);
             console.log('status:', status);
             console.log('headers:', headers());
-            console.log('config:', config);
             $scope.result = data;
             $scope.headers = headers();
             $scope.status = status;
