@@ -60,7 +60,6 @@ apiTalk.controller('APICtrl', ['$scope', '$http', 'UrlHelper', 'HtmlHelper',
                 if(!historyRequests) {
                     historyRequests = [];
                 }
-
                 historyRequests.push($scope.currentRequest);
                 var a = {}; a[historyKey] = historyRequests;
                 chrome.storage.sync.set(a);
