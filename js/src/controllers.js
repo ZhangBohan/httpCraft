@@ -1,55 +1,85 @@
 var apiTalk = angular.module('apiTalkControllers', []);
 
-apiTalk.controller('APICtrl', ['$scope', '$http', 'UrlHelper', '$sce',
-    function($scope, $http, UrlHelper, $sce) {
+apiTalk.controller('APICtrl', ['$scope', '$http', 'UrlHelper', 'HtmlHelper',
+    function($scope, $http, UrlHelper, HtmlHelper) {
+        var currentKey = 'currentRequest';
+        chrome.storage.sync.get(currentKey, function(result) {
+            // The $apply is only necessary to execute the function inside Angular scope
+            $scope.$apply(function() {
+                console.log("result:", result);
+                var currentRequest = result[currentKey];
+                if(currentRequest) {
+                    $scope.currentRequest = currentRequest;
+                } else {
+                    $scope.currentRequest = {
+                        "name": "Name",
+                        "desc": "Desc",
+                        "url": "guides.appchina.com/guide/apps/4",
+                        "urlParams": {},
+                        "requestMethod": "GET"
+                    };
+                    console.log("init", $scope.currentRequest);
+                }
 
-    $scope.requestMethods = ['GET', 'POST', 'PUT', 'DELETE'];
-    $scope.requestMethod = 'GET';
-
-    $scope.urlParams = [{}];
-
-    $scope.url = 'http://guides.appchina.com/guide/apps/4';
-    $scope.radioModel = 'Raw';
-
-    $scope.send = function() {
-        $('#btn-send').button('loading');
-        console.debug('url:', $scope.url, 'after helper:', UrlHelper($scope.url));
-        $http({method: $scope.requestMethod, url: UrlHelper($scope.url), config: {
-
-        }}).success(function(data, status, headers) {
-            console.log('data:', data);
-            console.log('status:', status);
-            console.log('headers:', headers());
-            $scope.result = data;
-            $scope.headers = headers();
-            $scope.status = status;
-            $('#btn-send').button('reset');
-        }).error(function(data, status, headers) {
-            $scope.result = data;
-            $scope.resultHtml = $sce.trustAsHtml(data);
-            $scope.headers = headers();
-            $scope.status = status;
-            $('#btn-send').button('reset');
-
-            console.log('data:', data);
-            console.log('status:', status);
-            console.log('headers:', headers());
-            console.log('resultHtml:', $scope.resultHtml);
+                console.log("$scope.currentRequest:", $scope.currentRequest);
+            });
         });
-    };
 
-    $scope.changeMethod = function(methodName) {
-        $scope.requestMethod = methodName;
-    }
 
-    $scope.changeUrlParam = function(index) {
-        // save to urlParams
-        $scope.urlParams[index] = {key: $scope.urlKey, value: $scope.urlValue};
-        console.log('$scope.urlParams:', $scope.urlParams);
+        $scope.requestMethods = ['GET', 'POST', 'PUT', 'DELETE'];
 
-        // auto add form
-        if(index + 1 == $scope.urlParams.length) {
-            $scope.urlParams.push({});
+        $scope.radioModel = 'Raw';
+
+
+        var requestCallback = function(data, status, headers) {
+            console.log('data:', data);
+            console.log('status:', status);
+            console.log('headers:', headers());
+            $scope.result = data;
+            $scope.resultHtml = HtmlHelper(data);
+            $scope.headers = headers();
+            $scope.status = status;
+            $('#btn-send').button('reset');
         }
-    }
+
+        $scope.send = function() {
+            $('#btn-send').button('loading');
+            console.debug('currentRequest:', $scope.currentRequest);
+            $http({
+                method: $scope.currentRequest.requestMethod,
+                url: UrlHelper($scope.currentRequest.url), config: {
+                    params: $scope.currentRequest.urlParams
+                }
+            }).success(requestCallback).error(requestCallback);
+
+            chrome.storage.sync.set({'currentRequest': $scope.currentRequest});
+            var historyKey = 'historyRequests';
+            chrome.storage.sync.get(historyKey, function(result) {
+                var historyRequests = result[historyKey];
+                console.debug('historyRequests:', historyRequests);
+                if(!historyRequests) {
+                    historyRequests = [];
+                }
+
+                historyRequests.push($scope.currentRequest);
+                var a = {}; a[historyKey] = historyRequests;
+                chrome.storage.sync.set(a);
+            });
+
+        };
+
+        $scope.changeMethod = function(methodName) {
+            $scope.currentRequest.requestMethod = methodName;
+        }
+
+        $scope.changeUrlParam = function(index) {
+            // save to urlParams
+            $scope.urlParams[index] = {key: $scope.urlKey, value: $scope.urlValue};
+            console.log('$scope.urlParams:', $scope.urlParams);
+
+            // auto add form
+            if(index + 1 == $scope.urlParams.length) {
+                $scope.urlParams.push({});
+            }
+        }
 }]);

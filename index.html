@@ -33,7 +33,7 @@
         <div class="well-sm">
             <div class="panel panel-default">
                 <div class="panel-heading" ng-click="requestIsCollapsed = !requestIsCollapsed">
-                    API Request
+                    {{currentRequest.name}}
                     <a ng-if="!requestIsCollapsed" class="pull-right">
                         Show Detail
                         <i class="fa fa-arrow-circle-o-down fa-2x"></i>
@@ -44,10 +44,7 @@
                     </a>
                 </div>
                 <div class="panel-body" ng-show="requestIsCollapsed">
-                    Regular web pages can use the XMLHttpRequest object to send and receive data from remote servers,
-                    but they're limited by the same origin policy. Extensions aren't so limited. An extension
-                    can talk to remote servers outside of its origin,
-                    as long as it first requests cross-origin permissions.
+                    {{currentRequest.desc}}
                 </div>
                 <div class="list-group">
 
@@ -58,19 +55,19 @@
                                     <div class="input-group">
                                         <div class="input-group-btn">
                                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                                {{requestMethod}}
+                                                {{currentRequest.requestMethod}}
                                                 <span class="caret"></span></button>
                                             <ul class="dropdown-menu">
-                                                <li ng-repeat="method in requestMethods" ng-if="method != requestMethod">
+                                                <li ng-repeat="method in requestMethods" ng-if="method != currentRequest.requestMethod">
                                                     <a ng-click="changeMethod(method);">{{method}}</a>
                                                 </li>
                                             </ul>
                                         </div><!-- /btn-group -->
-                                        <input ng-model="url" class="form-control" placeholder="Enter request URL here..." autofocus>
+                                        <input ng-model="currentRequest.url" class="form-control" placeholder="Enter request URL here..." autofocus>
                                     </div><!-- /input-group -->
                                 </div>
                             </div>
-                            <div class="form-group" ng-if="requestMethod == 'GET'" ng-repeat="curlParam in urlParams">
+                            <div class="form-group" ng-if="currentRequest.requestMethod == 'GET'" ng-repeat="curlParam in urlParams">
                                 <div class="col-sm-4">
                                     <input class="form-control" placeholder="key" ng-model="urlKey" ng-blur="changeUrlParam($index);">
                                 </div>
@@ -107,7 +104,7 @@
                     <h2>Headers:</h2>
                     <ul class="list-unstyled">
                         <li ng-repeat="(key, value) in headers">
-                            {{key}} --> {{value}}
+                            {{key}} <i class="fa fa-long-arrow-right"></i> {{value}}
                         </li>
                     </ul>
                 </div>
