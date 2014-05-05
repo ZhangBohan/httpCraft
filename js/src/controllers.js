@@ -15,7 +15,7 @@ apiTalk.controller('APICtrl', ['$scope', '$http', 'UrlHelper', 'HtmlHelper',
                         "name": "Name",
                         "desc": "Desc",
                         "url": "guides.appchina.com/guide/apps/4",
-                        "urlParams": {},
+                        "urlParams": [{}],
                         "requestMethod": "GET"
                     };
                     console.log("init", $scope.currentRequest);
@@ -29,6 +29,7 @@ apiTalk.controller('APICtrl', ['$scope', '$http', 'UrlHelper', 'HtmlHelper',
         $scope.requestMethods = ['GET', 'POST', 'PUT', 'DELETE'];
 
         $scope.radioModel = 'Raw';
+        $scope.urlParams = [{}];
 
 
         var requestCallback = function(data, status, headers) {
@@ -47,9 +48,8 @@ apiTalk.controller('APICtrl', ['$scope', '$http', 'UrlHelper', 'HtmlHelper',
             console.debug('currentRequest:', $scope.currentRequest);
             $http({
                 method: $scope.currentRequest.requestMethod,
-                url: UrlHelper($scope.currentRequest.url), config: {
-                    params: $scope.currentRequest.urlParams
-                }
+                url: UrlHelper.httpFix($scope.currentRequest.url),
+                params: UrlHelper.urlParamConvert($scope.currentRequest.urlParams)
             }).success(requestCallback).error(requestCallback);
 
             chrome.storage.sync.set({'currentRequest': $scope.currentRequest});
@@ -72,13 +72,19 @@ apiTalk.controller('APICtrl', ['$scope', '$http', 'UrlHelper', 'HtmlHelper',
         }
 
         $scope.changeUrlParam = function(index) {
-            // save to urlParams
-            $scope.urlParams[index] = {key: $scope.urlKey, value: $scope.urlValue};
-            console.log('$scope.urlParams:', $scope.urlParams);
-
             // auto add form
-            if(index + 1 == $scope.urlParams.length) {
-                $scope.urlParams.push({});
+            if(index + 1 == $scope.currentRequest.urlParams.length) {
+                $scope.currentRequest.urlParams.push({});
+            }
+        }
+
+        $scope.reset = function() {
+            $scope.currentRequest = {
+                "name": "Name",
+                "desc": "Desc",
+                "url": "",
+                "urlParams": [{}],
+                "requestMethod": "GET"
             }
         }
 }]);

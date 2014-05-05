@@ -6,8 +6,20 @@ var apiTalkServices = angular.module('apiTalkServices', []);
 
 apiTalkServices.factory('UrlHelper', [
     function(){
-        return function(url) {
-            return new RegExp("^[http://|https://]").test(url) ? url : "http://" + url;
+        return {
+            httpFix: function(url) {
+                return new RegExp("^[http://|https://]").test(url) ? url : "http://" + url;
+            },
+
+            urlParamConvert: function(urlParamArray) {
+                var obj = {};
+                for (var i = 0; i < urlParamArray.length; ++i)  {
+                    var urlParam = urlParamArray[i];
+                    obj[urlParam.key] = urlParam.value;
+                }
+
+                return obj;
+            }
         }
     }]);
 
@@ -28,7 +40,7 @@ apiTalkServices.factory('Storage', ['$q', function($q) {
             "name": "Name",
             "desc": "Desc",
             "url": "guides.appchina.com/guide/apps/4",
-            "urlParams": {},
+            "urlParams": [{}],
             "requestMethod": "GET"
         },
 
