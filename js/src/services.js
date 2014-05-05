@@ -60,7 +60,6 @@ apiTalkServices.factory('RequestStorage', ['$q', '$rootScope', '$timeout', funct
                         deferred.resolve(result);
                     });
                 });
-
             });
             console.debug('has get data!');
             return deferred.promise;
