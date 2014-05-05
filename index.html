@@ -67,9 +67,9 @@
                                     </div><!-- /input-group -->
                                 </div>
                             </div>
-                            <div class="form-group" ng-if="currentRequest.requestMethod == 'GET'">
+                            <div class="form-group">
                                 <div ng-repeat="urlParam in currentRequest.urlParams">
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-3">
                                         <input class="form-control" placeholder="key"
                                                ng-model="currentRequest.urlParams[$index].key" ng-change="changeUrlParam($index)">
                                     </div>
@@ -77,6 +77,14 @@
                                         <input class="form-control" placeholder="value"
                                                ng-model="currentRequest.urlParams[$index].value" ng-change="changeUrlParam($index)">
                                     </div>
+                                    <div class="col-sm-1">
+                                        <a href="" ng-click="delUrlParams($index)"><i class="fa fa-times-circle fa-2x"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-if="currentRequest.requestMethod != 'GET'">
+                                <div class="col-sm-12">
+                                    <textarea ng-model="currentRequest.data" class="form-control" rows="5"></textarea>
                                 </div>
                             </div>
                             <div class="form-group">

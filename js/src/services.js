@@ -34,26 +34,55 @@ apiTalkServices.factory('HtmlHelper', [ '$sce',
         }
     }]);
 
-apiTalkServices.factory('Storage', ['$q', function($q) {
+apiTalkServices.factory('RequestStorage', ['$q', '$rootScope', '$timeout', function($q, $rootScope, $timeout) {
     return {
-        defaultRequest: {
+        default: {
             "name": "Name",
             "desc": "Desc",
-            "url": "guides.appchina.com/guide/apps/4",
+            "url": "https://api.douban.com/v2/book/1220562",
             "urlParams": [{}],
-            "requestMethod": "GET"
+            "requestMethod": "GET",
+            "data": ""
         },
 
-        get: function(key) {
+        getData: function(key, defaultValue) {
+            var deferred = $q.defer();
+
             chrome.storage.sync.get(key, function(value) {
-                return value;
+                $timeout(function() {
+                    $rootScope.$apply(function () {
+                        var result = value[key];
+                        console.debug('get from storage:', result, 'key:', key);
+                        if(!result) {
+                            console.debug('init from defaultValue:', defaultValue);
+                            result = defaultValue;
+                        }
+                        deferred.resolve(result);
+                    });
+                });
+
             });
+            console.debug('has get data!');
+            return deferred.promise;
         },
 
-        set: function(key, value) {
+        setData: function(key, value) {
+            var deferred = $q.defer();
+
+            console.debug('set data, key:', key, ', value:', value);
             var a = {};
             a[key] = value;
-            chrome.storage.sync.set(a, function() {});
+            chrome.storage.sync.set(a, function() {
+                $timeout(function() {
+                    $rootScope.$apply(function () {
+                        deferred.resolve();
+                    });
+                });
+
+            });
+
+            console.debug('has set data!');
+            return deferred.promise;
         }
     }
 }]) ;
