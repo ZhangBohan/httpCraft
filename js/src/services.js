@@ -32,7 +32,9 @@ httpCraftServices.factory('UrlHelper', [
                 var obj = {};
                 for (var i = 0; i < urlParamArray.length; ++i)  {
                     var urlParam = urlParamArray[i];
-                    obj[urlParam.key] = urlParam.value;
+                    if(urlParam.key != undefined) {
+                        obj[urlParam.key] = urlParam.value;
+                    }
                 }
 
                 return obj;
@@ -64,12 +66,10 @@ httpCraftServices.factory('RequestStorage', ['$q', '$rootScope', '$timeout', fun
             "urlParams": [{}],
             "headers": [],
             "method": "GET",
-            "methodMeta": {
-                "tabName": "",
-                "data": "",
-                "formParams": [{}],
-                "xFormParams": [{}]
-            },
+            "tabName": "form-data",
+            "data": "",
+            "formParams": [{}],
+            "xFormParams": [{}],
             "responseData": {}
         },
 
@@ -117,25 +117,34 @@ httpCraftServices.factory('HttpUtils', [ '$http', '$q', 'UrlHelper',
     function($http, $q, UrlHelper){
         return {
             send: function(request) {
-                console.debug('request:', request);
                 var deferred = $q.defer();
+
+                var data = request.data;
+                var headers = UrlHelper.urlParamConvert(request.headers);
+                if(request.method != 'GET' && 'form-data' == request.tabName) {
+                    console.debug('form data');
+                    headers['Content-Type'] = 'application/x-www-form-urlencoded';
+                    data = $.param(UrlHelper.urlParamConvert(request.formParams));
+                }
+                console.debug('request:', request, 'data:', data, 'headers:', headers);
                 if(UrlHelper.urlValidate(request.url)) {
                     $http({
                         method: request.method,
                         url: UrlHelper.urlFix(request.url),
                         params: UrlHelper.urlParamConvert(request.urlParams),
-                        data: request.data
+                        data: data,
+                        headers: headers
                     }).success(function(data, status, headers) {
                         deferred.resolve({
                             data: data,
                             status: status,
-                            headers: headers
+                            headers: headers()
                         });
                     }).error(function(data, status, headers) {
                         deferred.resolve({
                             data: data,
                             status: status,
-                            headers: headers
+                            headers: headers()
                         });
                     });
 

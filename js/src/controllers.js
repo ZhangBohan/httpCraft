@@ -28,13 +28,13 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
 
         $scope.send = function() {
             $('#btn-send').button('loading');
-
+            console.debug('tabs', $scope.tabs);
             HttpUtils.send($scope.currentRequest).then(function(result) {
                 console.debug('result:', result);
                 $scope.result = result.data;
                 $scope.resultHtml = HtmlHelper(result.data);
-                $scope.headers = result.headers();
-                $scope.status = status;
+                $scope.headers = result.headers;
+                $scope.status = result.status;
                 $('#btn-send').button('reset');
 
                 RequestStorage.setData('currentRequest', $scope.currentRequest);
@@ -70,15 +70,15 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
 
         $scope.changeFormParam = function(index) {
             // auto add form
-            if(index + 1 == $scope.currentRequest.methodMeta.formParams.length) {
-                $scope.currentRequest.methodMeta.formParams.push({});
+            if(index + 1 == $scope.currentRequest.formParams.length) {
+                $scope.currentRequest.formParams.push({});
             }
         };
 
         $scope.delFormParams = function(index) {
-            $scope.currentRequest.methodMeta.formParams.splice(index, 1);
-            if($scope.currentRequest.methodMeta.formParams.length == 0) {
-                $scope.currentRequest.methodMeta.formParams.push({});
+            $scope.currentRequest.formParams.splice(index, 1);
+            if($scope.currentRequest.formParams.length == 0) {
+                $scope.currentRequest.formParams.push({});
             }
         };
 
