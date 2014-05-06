@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>API Talk</title>
+    <title>HTTP Craft</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="css/font-awesome.min.css">
@@ -14,7 +14,7 @@
     <script src="js/lib/angular-route.min.js"></script>
     <script src="js/lib/ui-bootstrap.min.js"></script>
 </head>
-<body ng-app="apiTalk">
+<body ng-app="httpCraft">
     <nav class="navbar navbar-inverse" role="navigation">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -25,120 +25,148 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">API Talk</a>
+                <a class="navbar-brand" href="">HTTP Craft</a>
             </div>
         </div><!-- /.container-fluid -->
     </nav>
     <div class="container" ng-controller="APICtrl">
-        <div class="well-sm">
-            <div class="panel panel-default">
-                <div class="panel-heading" ng-click="requestIsCollapsed = !requestIsCollapsed">
-                    {{currentRequest.name}}
-                    <a ng-if="!requestIsCollapsed" class="pull-right">
-                        Show Detail
-                        <i class="fa fa-arrow-circle-o-down fa-2x"></i>
-                    </a>
-                    <a ng-if="requestIsCollapsed" class="pull-right">
-                        Hide Detail
-                        <i class="fa fa-arrow-circle-o-up fa-2x"></i>
-                    </a>
-                </div>
-                <div class="panel-body" ng-show="requestIsCollapsed">
-                    {{currentRequest.desc}}
-                </div>
-                <div class="list-group">
+        <div class="row">
+            <div class="col-sm-4">
+                <tabset>
+                    <tab heading="History">
+                        <ul class="list-unstyled">
+                            <li ng-repeat="request in historyRequests track by $index | orderBy:'-createdAt':false">
+                                <span class="label {{requestMethods[request.method].css}}">{{request.method}}</span>
+                                <a href="" class="btn-link" ng-click="clickHistory(request);">
+                                    {{request.url}}
+                                </a>
+                            </li>
+                        </ul>
+                    </tab>
+                    <tab heading="Saved">
 
-                    <div class="list-group-item">
-                        <form class="form-horizontal" role="form" ng-submit="send();">
-                            <div class="form-group">
-                                <div class="col-sm-12">
-                                    <div class="input-group">
-                                        <div class="input-group-btn">
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                                {{currentRequest.requestMethod}}
-                                                <span class="caret"></span></button>
-                                            <ul class="dropdown-menu">
-                                                <li ng-repeat="method in requestMethods" ng-if="method != currentRequest.requestMethod">
-                                                    <a ng-click="changeMethod(method);">{{method}}</a>
-                                                </li>
-                                            </ul>
-                                        </div><!-- /btn-group -->
-                                        <input ng-model="currentRequest.url" class="form-control" placeholder="Enter request URL here..." autofocus>
-                                    </div><!-- /input-group -->
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div ng-repeat="urlParam in currentRequest.urlParams">
-                                    <div class="col-sm-3">
-                                        <input class="form-control" placeholder="key"
-                                               ng-model="currentRequest.urlParams[$index].key" ng-change="changeUrlParam($index)">
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <input class="form-control" placeholder="value"
-                                               ng-model="currentRequest.urlParams[$index].value" ng-change="changeUrlParam($index)">
-                                    </div>
-                                    <div class="col-sm-1">
-                                        <a href="" ng-click="delUrlParams($index)"><i class="fa fa-times-circle fa-2x"></i></a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group" ng-if="currentRequest.requestMethod != 'GET'">
-                                <div class="col-sm-12">
-                                    <textarea ng-model="currentRequest.data" class="form-control" rows="5"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-sm-12">
-                                    <button class="btn btn-primary" id="btn-send" data-loading-text="Loading..." type="submit">Send</button>
-                                    <a class="btn btn-success">Save</a>
-
-                                    <a class="btn btn-danger pull-right" ng-click="reset();">Reset</a>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                    </tab>
+                </tabset>
             </div>
-            <div class="panel panel-default" ng-if="headers">
-                <div class="panel-heading" ng-click="headerIsCollapsed = !headerIsCollapsed">
-                    <span class="label label-success" ng-if="status == 200">{{status}}</span>
-                    <span class="label label-danger" ng-if="status != 200">{{status}}</span>
-                    <a ng-if="!headerIsCollapsed" class="pull-right">
-                        Show Headers
-                        <i class="fa fa-arrow-circle-o-down fa-2x"></i>
-                    </a>
-                    <a ng-if="headerIsCollapsed" class="pull-right">
-                        Hide Headers
-                        <i class="fa fa-arrow-circle-o-up fa-2x"></i>
-                    </a>
-                </div>
-                <div class="panel-body" ng-show="headerIsCollapsed">
-                    <h2>Headers:</h2>
-                    <ul class="list-unstyled">
-                        <li ng-repeat="(key, value) in headers">
-                            {{key}} <i class="fa fa-long-arrow-right"></i> {{value}}
-                        </li>
-                    </ul>
-                </div>
-                <div class="panel-group">
-                    <div class="list-group-item">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary" ng-model="radioModel" btn-radio="'Pretty'">Pretty</button>
-                            <button type="button" class="btn btn-primary" ng-model="radioModel" btn-radio="'Raw'">Raw</button>
-                            <button type="button" class="btn btn-primary" ng-model="radioModel" btn-radio="'Preview'">Preview</button>
+            <div class="col-sm-8">
+                <div class="panel panel-default">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <form class="form-horizontal" role="form" ng-submit="send();">
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <a class="btn btn-success pull-right" ng-show="!currentRequest.uuid">Save</a>
+                                        <a class="btn btn-info pull-right" ng-show="currentRequest.uuid">Update</a>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <div class="input-group">
+                                            <div class="input-group-btn">
+                                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                                    {{currentRequest.method}}
+                                                    <span class="caret"></span></button>
+                                                <ul class="dropdown-menu">
+                                                    <li ng-repeat="(key, value) in requestMethods" ng-if="key != currentRequest.method">
+                                                        <a ng-click="changeMethod(key);">{{key}}</a>
+                                                    </li>
+                                                </ul>
+                                            </div><!-- /btn-group -->
+                                            <input ng-model="currentRequest.url" class="form-control" placeholder="Enter request URL here..." autofocus>
+                                        </div><!-- /input-group -->
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div ng-repeat="urlParam in currentRequest.urlParams">
+                                        <div class="col-sm-3">
+                                            <input class="form-control" placeholder="key"
+                                                   ng-model="currentRequest.urlParams[$index].key" ng-change="changeUrlParam($index)">
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <input class="form-control" placeholder="value"
+                                                   ng-model="currentRequest.urlParams[$index].value" ng-change="changeUrlParam($index)">
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <a href="" ng-click="delUrlParams($index)"><i class="fa fa-times-circle fa-2x"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group" ng-if="currentRequest.method != 'GET'">
+                                    <div class="col-sm-12">
+                                        <tabset>
+                                            <tab heading="form-data">
+                                                <div ng-repeat="formParam in currentRequest.formParams">
+                                                    <div class="col-sm-3">
+                                                        <input class="form-control" placeholder="key"
+                                                               ng-model="currentRequest.methodMeta.formParams[$index].key" ng-change="changeFormParam($index)">
+                                                    </div>
+                                                    <div class="col-sm-8">
+                                                        <input class="form-control" placeholder="value"
+                                                               ng-model="currentRequest.methodMeta.formParams[$index].value" ng-change="changeFormParam($index)">
+                                                    </div>
+                                                    <div class="col-sm-1">
+                                                        <a href="" ng-click="delFormParams($index)"><i class="fa fa-times-circle fa-2x"></i></a>
+                                                    </div>
+                                                </div>
+                                            </tab>
+                                            <tab heading="Body">
+                                                <textarea ng-model="currentRequest.data" class="form-control" rows="5"></textarea>
+                                            </tab>
+                                        </tabset>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <button class="btn btn-primary" id="btn-send" data-loading-text="Loading..." type="submit">Send</button>
+
+                                        <a class="btn btn-danger pull-right" ng-click="reset();">Reset</a>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                    <div class="list-group-item" ng-if="'Pretty' == radioModel">
-                        <pre>{{result | json}}</pre>
-                    </div>
-                    <div class="list-group-item" ng-if="'Raw' == radioModel">
-                        <textarea class="form-control" rows="10">{{result}}</textarea>
-                    </div>
-                    <div class="list-group-item" ng-if="'Preview' == radioModel">
-                        <div ng-bind-html="resultHtml"></div>
-                    </div>
                 </div>
+                <div class="panel panel-default" ng-if="headers">
+                    <div class="panel-heading" ng-click="headerIsCollapsed = !headerIsCollapsed">
+                        <span class="label label-success" ng-if="status == 200">{{status}}</span>
+                        <span class="label label-danger" ng-if="status != 200">{{status}}</span>
+                        <a ng-if="!headerIsCollapsed" class="pull-right">
+                            Show Headers
+                            <i class="fa fa-arrow-circle-o-down fa-2x"></i>
+                        </a>
+                        <a ng-if="headerIsCollapsed" class="pull-right">
+                            Hide Headers
+                            <i class="fa fa-arrow-circle-o-up fa-2x"></i>
+                        </a>
+                    </div>
+                    <div class="panel-body" ng-show="headerIsCollapsed">
+                        <h2>Headers:</h2>
+                        <ul class="list-unstyled">
+                            <li ng-repeat="(key, value) in headers">
+                                {{key}} <i class="fa fa-long-arrow-right"></i> {{value}}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="panel-group">
+                        <div class="list-group-item">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary" ng-model="radioModel" btn-radio="'Pretty'">Pretty</button>
+                                <button type="button" class="btn btn-primary" ng-model="radioModel" btn-radio="'Raw'">Raw</button>
+                                <button type="button" class="btn btn-primary" ng-model="radioModel" btn-radio="'Preview'">Preview</button>
+                            </div>
+                        </div>
+                        <div class="list-group-item" ng-if="'Pretty' == radioModel">
+                            <pre>{{result | json}}</pre>
+                        </div>
+                        <div class="list-group-item" ng-if="'Raw' == radioModel">
+                            <textarea class="form-control" rows="10">{{result}}</textarea>
+                        </div>
+                        <div class="list-group-item" ng-if="'Preview' == radioModel">
+                            <div ng-bind-html="resultHtml"></div>
+                        </div>
+                    </div>
 
+                </div>
             </div>
         </div>
     </div>

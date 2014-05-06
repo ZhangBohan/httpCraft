@@ -2,12 +2,29 @@
 
 /* Services */
 
-var apiTalkServices = angular.module('apiTalkServices', []);
+var httpCraftServices = angular.module('httpCraftServices', []);
 
-apiTalkServices.factory('UrlHelper', [
+httpCraftServices.factory("UUID", function () {
+    return {
+        newUUID: function () {
+            // http://www.ietf.org/rfc/rfc4122.txt
+            var s = [];
+            var hexDigits = "0123456789abcdef";
+            for (var i = 0; i < 36; i++) {
+                s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+            }
+            s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+            s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+            s[8] = s[13] = s[18] = s[23] = "-";
+            return s.join("");
+        }
+    }
+});
+
+httpCraftServices.factory('UrlHelper', [
     function(){
         return {
-            httpFix: function(url) {
+            urlFix: function(url) {
                 return new RegExp("^[http://|https://]").test(url) ? url : "http://" + url;
             },
 
@@ -19,11 +36,15 @@ apiTalkServices.factory('UrlHelper', [
                 }
 
                 return obj;
+            },
+
+            urlValidate: function(url) {
+                return url && url.trim() != '';
             }
         }
     }]);
 
-apiTalkServices.factory('HtmlHelper', [ '$sce',
+httpCraftServices.factory('HtmlHelper', [ '$sce',
     function($sce){
         return function(content) {
             if(!(typeof content == 'string')) {
@@ -34,15 +55,22 @@ apiTalkServices.factory('HtmlHelper', [ '$sce',
         }
     }]);
 
-apiTalkServices.factory('RequestStorage', ['$q', '$rootScope', '$timeout', function($q, $rootScope, $timeout) {
+httpCraftServices.factory('RequestStorage', ['$q', '$rootScope', '$timeout', function($q, $rootScope, $timeout) {
     return {
-        default: {
-            "name": "Name",
-            "desc": "Desc",
+        defaultRequest: {
+            "name": "",
+            "description": "",
             "url": "https://api.douban.com/v2/book/1220562",
             "urlParams": [{}],
-            "requestMethod": "GET",
-            "data": ""
+            "headers": [],
+            "method": "GET",
+            "methodMeta": {
+                "tabName": "",
+                "data": "",
+                "formParams": [{}],
+                "xFormParams": [{}]
+            },
+            "responseData": {}
         },
 
         getData: function(key, defaultValue) {
@@ -55,13 +83,12 @@ apiTalkServices.factory('RequestStorage', ['$q', '$rootScope', '$timeout', funct
                         console.debug('get from storage:', result, 'key:', key);
                         if(!result) {
                             console.debug('init from defaultValue:', defaultValue);
-                            result = defaultValue;
+                            result = angular.copy(defaultValue);
                         }
                         deferred.resolve(result);
                     });
                 });
             });
-            console.debug('has get data!');
             return deferred.promise;
         },
 
@@ -80,8 +107,45 @@ apiTalkServices.factory('RequestStorage', ['$q', '$rootScope', '$timeout', funct
 
             });
 
-            console.debug('has set data!');
             return deferred.promise;
         }
     }
-}]) ;
+}]);
+
+
+httpCraftServices.factory('HttpUtils', [ '$http', '$q', 'UrlHelper',
+    function($http, $q, UrlHelper){
+        return {
+            send: function(request) {
+                console.debug('request:', request);
+                var deferred = $q.defer();
+                if(UrlHelper.urlValidate(request.url)) {
+                    $http({
+                        method: request.method,
+                        url: UrlHelper.urlFix(request.url),
+                        params: UrlHelper.urlParamConvert(request.urlParams),
+                        data: request.data
+                    }).success(function(data, status, headers) {
+                        deferred.resolve({
+                            data: data,
+                            status: status,
+                            headers: headers
+                        });
+                    }).error(function(data, status, headers) {
+                        deferred.resolve({
+                            data: data,
+                            status: status,
+                            headers: headers
+                        });
+                    });
+
+
+                } else {
+                    deferred.reject('not validate url!');
+                }
+
+                console.debug('promise');
+                return deferred.promise;
+            }
+        }
+    }]);
