@@ -124,7 +124,7 @@ httpCraftServices.factory('HttpUtils', [ '$http', '$q', 'UrlHelper',
                 if(request.method != 'GET' && 'x-www-form-urlencoded' == request.tabName) {
                     console.debug('x-www-form-urlencoded request');
                     headers['Content-Type'] = 'application/x-www-form-urlencoded';
-                    data = $.param(UrlHelper.urlParamConvert(request.formParams));
+                    data = $.param(UrlHelper.urlParamConvert(request.xFormParams));
                 }
                 console.debug('request:', request, 'data:', data, 'headers:', headers);
                 if(UrlHelper.urlValidate(request.url)) {
