@@ -28,7 +28,6 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
 
         $scope.send = function() {
             $('#btn-send').button('loading');
-            console.debug('tabs', $scope.tabs);
             HttpUtils.send($scope.currentRequest).then(function(result) {
                 console.debug('result:', result);
                 $scope.result = result.data;

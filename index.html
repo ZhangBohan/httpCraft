@@ -55,8 +55,7 @@
                             <form class="form-horizontal" role="form" ng-submit="send();">
                                 <div class="form-group">
                                     <div class="col-sm-12">
-                                        <a class="btn btn-success pull-right" ng-show="!currentRequest.uuid">Save</a>
-                                        <a class="btn btn-info pull-right" ng-show="currentRequest.uuid">Update</a>
+
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -95,7 +94,7 @@
                                     <div class="col-sm-12">
 
                                         <div class="btn-group">
-                                            <label class="btn btn-sm btn-info" ng-model="currentRequest.tabName" btn-radio="'form-data'">Form-data</label>
+                                            <!--<label class="btn btn-sm btn-info" ng-model="currentRequest.tabName" btn-radio="'form-data'">Form-data</label>-->
                                             <label class="btn btn-sm btn-info" ng-model="currentRequest.tabName" btn-radio="'x-www-form-urlencoded'">X-www-form-urlencoded</label>
                                             <label class="btn btn-sm btn-info" ng-model="currentRequest.tabName" btn-radio="'body'">Body</label>
                                         </div>
@@ -151,7 +150,8 @@
                                 <div class="form-group">
                                     <div class="col-sm-12">
                                         <button class="btn btn-primary" id="btn-send" data-loading-text="Loading..." type="submit">Send</button>
-
+                                        <a class="btn btn-success" ng-show="!currentRequest.uuid" ng-click="saveModal();">Save</a>
+                                        <a class="btn btn-info" ng-show="currentRequest.uuid">Update</a>
                                         <a class="btn btn-danger pull-right" ng-click="reset();">Reset</a>
                                     </div>
                                 </div>
@@ -202,6 +202,24 @@
             </div>
         </div>
     </div>
+
+    <script type="text/ng-template" id="saveModalContent.html">
+        <div class="modal-header">
+            <h3 class="modal-title">I'm a modal!</h3>
+        </div>
+        <div class="modal-body">
+            <ul>
+                <li ng-repeat="item in items">
+                    <a ng-click="selected.item = item">{{ item }}</a>
+                </li>
+            </ul>
+            Selected: <b>{{ selected.item }}</b>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
     <script src="js/src/app.js"></script>
     <script src="js/src/services.js"></script>
     <script src="js/src/controllers.js"></script>
