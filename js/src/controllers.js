@@ -104,11 +104,17 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
             console.debug('request:', request, '$scope.currentRequest:', $scope.currentRequest);
         };
 
+
         $scope.saveRequest = function() {
-            RequestStorage.get(saveKey, []).then(function(requests) {
-                $scope.currentRequest.createdAt = new Date().getTime();
-                $scope.currentRequest.uuid = UUID.newUUID();
-                requests.push($scope.currentRequest);
-            });
+            if(!$scope.saveStatus) {
+                $scope.saveStatus = true;
+            } else {
+                RequestStorage.getData(saveKey, []).then(function(requests) {
+                    $scope.currentRequest.createdAt = new Date().getTime();
+                    $scope.currentRequest.uuid = UUID.newUUID();
+                    requests.push($scope.currentRequest);
+                    RequestStorage.setData(saveKey, requests);
+                });
+            }
         };
 }]);
