@@ -66,7 +66,7 @@ httpCraftServices.factory('RequestStorage', ['$q', '$rootScope', '$timeout', fun
             "urlParams": [{}],
             "headers": [],
             "method": "GET",
-            "tabName": "form-data",
+            "tabName": "x-www-form-urlencoded",
             "data": "",
             "formParams": [{}],
             "xFormParams": [{}],
@@ -121,8 +121,8 @@ httpCraftServices.factory('HttpUtils', [ '$http', '$q', 'UrlHelper',
 
                 var data = request.data;
                 var headers = UrlHelper.urlParamConvert(request.headers);
-                if(request.method != 'GET' && 'form-data' == request.tabName) {
-                    console.debug('form data');
+                if(request.method != 'GET' && 'x-www-form-urlencoded' == request.tabName) {
+                    console.debug('x-www-form-urlencoded request');
                     headers['Content-Type'] = 'application/x-www-form-urlencoded';
                     data = $.param(UrlHelper.urlParamConvert(request.formParams));
                 }

@@ -101,36 +101,50 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <div ng-repeat="formParam in currentRequest.formParams track by $index" ng-show="currentRequest.tabName == 'form-data'">
-                                        <div class="col-sm-3">
-                                            <input class="form-control" placeholder="key"
-                                                   ng-model="currentRequest.formParams[$index].key" ng-change="changeFormParam($index)">
-                                        </div>
-                                        <div class="col-sm-8">
-                                            <input class="form-control" placeholder="value"
-                                                   ng-model="currentRequest.formParams[$index].value" ng-change="changeFormParam($index)">
-                                        </div>
-                                        <div class="col-sm-1">
-                                            <a href="" ng-click="delFormParams($index)"><i class="fa fa-times-circle fa-2x"></i></a>
-                                        </div>
+                                <div class="form-group" ng-repeat="formParam in currentRequest.formParams track by $index" ng-show="currentRequest.tabName == 'form-data'">
+                                    <div class="col-sm-3">
+                                        <input class="form-control" placeholder="key"
+                                               ng-model="currentRequest.formParams[$index].key" ng-change="changeFormParam($index)">
                                     </div>
-
-                                    <div ng-repeat="formParam in currentRequest.xFormParams track by $index" ng-show="currentRequest.tabName == 'x-www-form-urlencoded'">
-                                        <div class="col-sm-3">
-                                            <input class="form-control" placeholder="key"
-                                                   ng-model="currentRequest.xFormParams[$index].key" ng-change="changeFormParam($index)">
-                                        </div>
-                                        <div class="col-sm-8">
-                                            <input class="form-control" placeholder="value"
-                                                   ng-model="currentRequest.xFormParams[$index].value" ng-change="changeFormParam($index)">
-                                        </div>
-                                        <div class="col-sm-1">
-                                            <a href="" ng-click="delFormParams($index)"><i class="fa fa-times-circle fa-2x"></i></a>
-                                        </div>
+                                    <div class="col-sm-8">
+                                        <input class="form-control" placeholder="value"
+                                               ng-model="currentRequest.formParams[$index].value" ng-change="changeFormParam($index)">
                                     </div>
+                                    <div class="col-sm-1">
+                                        <a href="" ng-click="delFormParams($index)"><i class="fa fa-times-circle fa-2x"></i></a>
+                                    </div>
+                                </div>
 
-                                    <div class="col-sm-12" ng-show="currentRequest.tabName == 'body'">
+                                <div class="form-group" ng-repeat="formParam in currentRequest.xFormParams track by $index" ng-show="currentRequest.tabName == 'x-www-form-urlencoded'">
+                                    <div class="col-sm-3">
+                                        <input class="form-control" placeholder="key"
+                                               ng-model="currentRequest.xFormParams[$index].key" ng-change="changeXFormParam($index)">
+
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" placeholder="value"
+                                               ng-model="currentRequest.xFormParams[$index].value"
+                                               ng-change="changeXFormParam($index)"
+                                               ng-click="changeXFormParam($index)"
+                                               ng-show="!currentRequest.xFormParams[$index].valueType">
+                                        <textarea class="form-control"  ng-model="currentRequest.xFormParams[$index].value" rows="5"
+                                                  ng-change="changeXFormParam($index)"
+                                                  ng-click="changeXFormParam($index)"
+                                                  ng-show="currentRequest.xFormParams[$index].valueType == 'text'"></textarea>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <select ng-model="currentRequest.xFormParams[$index].valueType" class="form-control">
+                                            <option value="">input</option>
+                                            <option value="text">text</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <a href="" ng-click="delXFormParams($index)"><i class="fa fa-times-circle fa-2x"></i></a>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" ng-show="currentRequest.tabName == 'body'">
+                                    <div class="col-sm-12">
                                         <textarea ng-model="currentRequest.data" class="form-control" rows="5"></textarea>
                                     </div>
                                 </div>

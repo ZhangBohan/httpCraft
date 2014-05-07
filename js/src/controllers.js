@@ -82,6 +82,20 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
             }
         };
 
+        $scope.changeXFormParam = function(index) {
+            // auto add form
+            if(index + 1 == $scope.currentRequest.xFormParams.length) {
+                $scope.currentRequest.xFormParams.push({});
+            }
+        };
+
+        $scope.delXFormParams = function(index) {
+            $scope.currentRequest.xFormParams.splice(index, 1);
+            if($scope.currentRequest.xFormParams.length == 0) {
+                $scope.currentRequest.xFormParams.push({});
+            }
+        };
+
         $scope.reset = function() {
             $scope.currentRequest = angular.copy(RequestStorage.defaultRequest);
         };
