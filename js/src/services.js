@@ -62,7 +62,7 @@ httpCraftServices.factory('RequestStorage', ['$q', '$rootScope', '$timeout', fun
         defaultRequest: {
             "name": "",
             "description": "",
-            "url": "https://api.douban.com/v2/book/1220562",
+            "url": "",
             "urlParams": [{}],
             "headers": [],
             "method": "GET",
