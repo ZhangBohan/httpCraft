@@ -10,5 +10,5 @@
     "permissions": [
         "*://*/", "storage"
     ],
-    "icons": { "128": "icon.png" }
+    "icons": { "128": "icon-128.png" }
 }
