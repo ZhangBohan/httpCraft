@@ -2,14 +2,14 @@
     "manifest_version": 2,
     "name": "HTTP Craft",
     "description": "A Chrome apps Manage API simpleness",
-    "version": "0.1",
+    "version": "0.2",
     "app": {
         "background": {
             "scripts": ["js/main.js"]
         }
     },
     "permissions": [
-        "*://*/", "storage"
+        "*://*/", "storage", "clipboardRead", "clipboardWrite"
     ],
     "icons": { "128": "icon-128.png" }
 }

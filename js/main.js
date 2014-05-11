@@ -7,3 +7,4 @@ chrome.app.runtime.onLaunched.addListener(function() {
     }, function(createdWindow) {
     });
 });
+
