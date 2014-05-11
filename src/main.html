@@ -1,0 +1,162 @@
+<div class="container" ng-controller="APICtrl">
+    <div class="row">
+        <div ng-include src="'src/lib/sidebar.html'"></div>
+        <div class="col-sm-8">
+            <ol class="breadcrumb">
+                <li class="active">HTTP Craft</li>
+            </ol>
+            <!--<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>-->
+            <div class="panel panel-default">
+                <div class="panel-heading" ng-show="currentRequest.uuid">
+                    {{currentRequest.name}}
+                </div>
+                <div class="panel-body" ng-show="currentRequest.description">
+                    {{currentRequest.description}}
+                </div>
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <form class="form-horizontal" role="form" ng-submit="send();">
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <div class="input-group">
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                                {{currentRequest.method}}
+                                                <span class="caret"></span></button>
+                                            <ul class="dropdown-menu">
+                                                <li ng-repeat="(key, value) in requestMethods" ng-if="key != currentRequest.method">
+                                                    <a ng-click="changeMethod(key);">{{key}}</a>
+                                                </li>
+                                            </ul>
+                                        </div><!-- /btn-group -->
+                                        <input ng-model="currentRequest.url" class="form-control" placeholder="Enter request URL here..." autofocus>
+                                    </div><!-- /input-group -->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div ng-repeat="urlParam in currentRequest.urlParams">
+                                    <div class="col-sm-3">
+                                        <input class="form-control" placeholder="key"
+                                               ng-model="currentRequest.urlParams[$index].key" ng-change="changeUrlParam($index)">
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <input class="form-control" placeholder="value"
+                                               ng-model="currentRequest.urlParams[$index].value" ng-change="changeUrlParam($index)">
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <a href="" ng-click="delUrlParams($index)"><i class="fa fa-times-circle fa-2x"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-if="currentRequest.method != 'GET'">
+                                <div class="col-sm-12">
+
+                                    <div class="btn-group">
+                                        <!--<label class="btn btn-sm btn-info" ng-model="currentRequest.tabName" btn-radio="'form-data'">Form-data</label>-->
+                                        <label class="btn btn-sm btn-info" ng-model="currentRequest.tabName" btn-radio="'x-www-form-urlencoded'">X-www-form-urlencoded</label>
+                                        <label class="btn btn-sm btn-info" ng-model="currentRequest.tabName" btn-radio="'body'">Body</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-repeat="formParam in currentRequest.formParams track by $index" ng-show="currentRequest.tabName == 'form-data'">
+                                <div class="col-sm-3">
+                                    <input class="form-control" placeholder="key"
+                                           ng-model="currentRequest.formParams[$index].key" ng-change="changeFormParam($index)">
+                                </div>
+                                <div class="col-sm-8">
+                                    <input class="form-control" placeholder="value"
+                                           ng-model="currentRequest.formParams[$index].value" ng-change="changeFormParam($index)">
+                                </div>
+                                <div class="col-sm-1">
+                                    <a href="" ng-click="delFormParams($index)"><i class="fa fa-times-circle fa-2x"></i></a>
+                                </div>
+                            </div>
+
+                            <div class="form-group" ng-repeat="formParam in currentRequest.xFormParams track by $index" ng-show="currentRequest.tabName == 'x-www-form-urlencoded'">
+                                <div class="col-sm-3">
+                                    <input class="form-control" placeholder="key"
+                                           ng-model="currentRequest.xFormParams[$index].key" ng-change="changeXFormParam($index)">
+
+                                </div>
+                                <div class="col-sm-6">
+                                    <input class="form-control" placeholder="value"
+                                           ng-model="currentRequest.xFormParams[$index].value"
+                                           ng-change="changeXFormParam($index)"
+                                           ng-click="changeXFormParam($index)"
+                                           ng-show="!currentRequest.xFormParams[$index].valueType">
+                                    <textarea class="form-control"  ng-model="currentRequest.xFormParams[$index].value" rows="5"
+                                              ng-change="changeXFormParam($index)"
+                                              ng-click="changeXFormParam($index)"
+                                              ng-show="currentRequest.xFormParams[$index].valueType == 'text'"></textarea>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select ng-model="currentRequest.xFormParams[$index].valueType" class="form-control">
+                                        <option value="">input</option>
+                                        <option value="text">text</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-1">
+                                    <a href="" ng-click="delXFormParams($index)"><i class="fa fa-times-circle fa-2x"></i></a>
+                                </div>
+                            </div>
+
+                            <div class="form-group" ng-show="currentRequest.tabName == 'body'">
+                                <div class="col-sm-12">
+                                    <textarea ng-model="currentRequest.data" class="form-control" rows="5"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    <button class="btn btn-primary" id="btn-send" data-loading-text="Loading..." type="submit">Send</button>
+                                    <a class="btn btn-success" ng-show="!currentRequest.uuid" ng-click="saveRequest()">Save</a>
+                                    <a class="btn btn-info" ng-show="currentRequest.uuid" ng-click="saveRequest()">Update</a>
+                                    <a class="btn btn-warning pull-right" ng-click="reset();">New Request</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default" ng-if="headers">
+                <div class="panel-heading" ng-click="headerIsCollapsed = !headerIsCollapsed">
+                    <status-label status="status"></status-label>
+                    <a ng-if="!headerIsCollapsed" class="pull-right">
+                        Show Headers
+                        <i class="fa fa-arrow-circle-o-down fa-2x"></i>
+                    </a>
+                    <a ng-if="headerIsCollapsed" class="pull-right">
+                        Hide Headers
+                        <i class="fa fa-arrow-circle-o-up fa-2x"></i>
+                    </a>
+                </div>
+                <div class="panel-body" ng-show="headerIsCollapsed">
+                    <h2>Headers:</h2>
+                    <ul class="list-unstyled">
+                        <li ng-repeat="(key, value) in headers">
+                            {{key}} <i class="fa fa-long-arrow-right"></i> {{value}}
+                        </li>
+                    </ul>
+                </div>
+                <div class="panel-group">
+                    <div class="list-group-item">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary" ng-model="radioModel" btn-radio="'Pretty'">Pretty</button>
+                            <button type="button" class="btn btn-primary" ng-model="radioModel" btn-radio="'Raw'">Raw</button>
+                            <button type="button" class="btn btn-primary" ng-model="radioModel" btn-radio="'Preview'">Preview</button>
+                        </div>
+                    </div>
+                    <div class="list-group-item" ng-if="'Pretty' == radioModel">
+                        <pre>{{result | json}}</pre>
+                    </div>
+                    <div class="list-group-item" ng-if="'Raw' == radioModel">
+                        <textarea class="form-control" rows="10">{{result}}</textarea>
+                    </div>
+                    <div class="list-group-item" ng-if="'Preview' == radioModel">
+                        <div ng-bind-html="resultHtml"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

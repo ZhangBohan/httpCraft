@@ -1,27 +1,20 @@
 var httpCraftControllers = angular.module('httpCraftControllers', []);
 
 httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
-        'HtmlHelper', 'RequestStorage', 'UUID',
-    function($scope, $http, HttpUtils, HtmlHelper, RequestStorage, UUID) {
-        var currentKey = 'currentRequest';
-        var historyKey = 'historyRequests';
-        var saveKey = 'savedRequests';
+        'HtmlHelper', 'RequestStorage', '$location', '$rootScope',
+    function($scope, $http, HttpUtils, HtmlHelper, RequestStorage, $location, $rootScope) {
 
-        RequestStorage.getData(currentKey, RequestStorage.defaultRequest).then(function(currentRequest) {
+        RequestStorage.getData($rootScope.currentKey, RequestStorage.defaultRequest).then(function(currentRequest) {
             $scope.currentRequest = currentRequest;
         });
 
-        RequestStorage.getData(historyKey, []).then(function(historyRequests) {
+        RequestStorage.getData($rootScope.historyKey, []).then(function(historyRequests) {
             $scope.historyRequests = historyRequests;
         });
 
-
-        $scope.requestMethods = {
-            GET: {name: 'GET', css: 'label-success'},
-            POST:{name: 'POST', css: 'label-primary'},
-            PUT: {name: 'PUT', css: 'label-info'},
-            DELETE: {name: 'DELETE', css: 'label-danger'}
-        };
+        RequestStorage.getData($rootScope.saveKey, []).then(function(savedRequests) {
+            $scope.savedRequests = savedRequests;
+        });
 
         $scope.radioModel = 'Raw';
         $scope.urlParams = [{}];
@@ -37,14 +30,14 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
                 $('#btn-send').button('reset');
 
                 RequestStorage.setData('currentRequest', $scope.currentRequest);
-                RequestStorage.getData(historyKey, []).then(function(historyRequests) {
-                    console.log('hrs:', historyRequests, 'key:', historyKey);
+                RequestStorage.getData($rootScope.historyKey, []).then(function(historyRequests) {
+                    console.log('hrs:', historyRequests, 'key:', $rootScope.historyKey);
                     $scope.currentRequest.createdAt = new Date().getTime();
                     historyRequests.push($scope.currentRequest);
                     $scope.historyRequests = historyRequests;
-                    RequestStorage.setData(historyKey, historyRequests);
+                    RequestStorage.setData($rootScope.historyKey, historyRequests);
                 });
-            }, function(reason) {
+            }, function() {
                 $('#btn-send').button('reset');
             });
         };
@@ -104,17 +97,63 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
             console.debug('request:', request, '$scope.currentRequest:', $scope.currentRequest);
         };
 
-
         $scope.saveRequest = function() {
-            if(!$scope.saveStatus) {
-                $scope.saveStatus = true;
-            } else {
-                RequestStorage.getData(saveKey, []).then(function(requests) {
-                    $scope.currentRequest.createdAt = new Date().getTime();
-                    $scope.currentRequest.uuid = UUID.newUUID();
-                    requests.push($scope.currentRequest);
-                    RequestStorage.setData(saveKey, requests);
-                });
-            }
-        };
+            RequestStorage.setData($rootScope.currentKey, $scope.currentRequest);
+            $location.path('/save')
+        }
+
 }]);
+
+
+httpCraftControllers.controller('NewAPICtrl', ['$scope', 'RequestStorage', '$location', '$rootScope', 'UUID',
+        function ($scope, RequestStorage, $location, $rootScope, UUID) {
+
+            RequestStorage.getData($rootScope.currentKey, RequestStorage.defaultRequest).then(function(currentRequest) {
+                $scope.currentRequest = currentRequest;
+            });
+
+            RequestStorage.getData($rootScope.historyKey, []).then(function(historyRequests) {
+                $scope.historyRequests = historyRequests;
+            });
+
+            RequestStorage.getData($rootScope.saveKey, []).then(function(requests) {
+                $scope.savedRequests = requests;
+            });
+
+            $scope.clickHistory = function(request) {
+                $scope.currentRequest = angular.copy(request);
+                RequestStorage.setData($rootScope.currentKey, $scope.currentRequest).then(function () {
+                    $location.path('/');
+                });
+
+            };
+
+            $scope.save = function() {
+                console.debug('$scope.currentRequest', $scope.currentRequest);
+                RequestStorage.getData($rootScope.saveKey, []).then(function(requests) {
+                    if(!$scope.currentRequest.uuid) {
+                        $scope.currentRequest.createdAt = new Date().getTime();
+                        $scope.currentRequest.uuid = UUID.newUUID();
+                    } else {
+                        for(var i = 0; i < requests.length; i++) {
+                            var request = requests[i];
+                            if(request.uuid == $scope.currentRequest.uuid) {
+                                request = $scope.currentRequest;
+                                break;
+                            }
+                        }
+                    }
+
+                    $scope.currentRequest.updatedAt = new Date().getTime();
+                    requests.push($scope.currentRequest);
+
+                    RequestStorage.setData($rootScope.saveKey, requests).then(function () {
+                        RequestStorage.setData($rootScope.currentKey, $scope.currentRequest).then(function () {
+                            $rootScope.alerts.push({type: 'success', msg: '保存成功'});
+                            $location.path('/');
+                        })
+                    });
+                });
+            };
+        }]
+);

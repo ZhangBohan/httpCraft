@@ -22,3 +22,18 @@ httpCraftDirectives.directive('statusLabel', function() {
         }
     };
 });
+
+httpCraftDirectives.directive('back', function () {
+    return {
+        restrict: 'E',
+        template: '<button class="btn btn-info pull-right">Back</button>',
+        scope: {
+        },
+        link: function(scope, element, attrs) {
+            $(element[0]).on('click', function() {
+                history.back();
+                scope.$apply();
+            });
+        }
+    };
+});

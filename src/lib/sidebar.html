@@ -1,0 +1,24 @@
+<div class="col-sm-4">
+    <tabset>
+        <tab heading="History">
+            <ul class="list-unstyled">
+                <li ng-repeat="request in historyRequests track by $index | orderBy:'-createdAt':false">
+                    <span class="label {{requestMethods[request.method].css}}">{{request.method}}</span>
+                    <a href="" class="btn-link" ng-click="clickHistory(request);">
+                        {{request.url}}
+                    </a>
+                </li>
+            </ul>
+        </tab>
+        <tab heading="Saved">
+            <ul class="list-unstyled">
+                <li ng-repeat="request in savedRequests track by $index | orderBy:'-createdAt':false">
+                    <span class="label {{requestMethods[request.method].css}}">{{request.method}}</span>
+                    <a href="" class="btn-link" ng-click="clickHistory(request);">
+                        {{request.name}}
+                    </a>
+                </li>
+            </ul>
+        </tab>
+    </tabset>
+</div>

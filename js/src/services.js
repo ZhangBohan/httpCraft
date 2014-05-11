@@ -108,6 +108,28 @@ httpCraftServices.factory('RequestStorage', ['$q', '$rootScope', '$timeout', fun
             });
 
             return deferred.promise;
+        },
+
+        setArrayData: function(arrayData) {
+            var deferred = $q.defer();
+
+            console.debug('set arrayData:', arrayData);
+            var a = {};
+            for(var i = 0; i < arrayData.length; i++) {
+                var data = arrayData[i];
+                a[data.key] = data.value;
+            }
+            console.debug('a', a);
+            chrome.storage.sync.set(a, function() {
+                $timeout(function() {
+                    $rootScope.$apply(function () {
+                        deferred.resolve();
+                    });
+                });
+
+            });
+
+            return deferred.promise;
         }
     }
 }]);
