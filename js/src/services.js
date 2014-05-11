@@ -141,6 +141,10 @@ httpCraftServices.factory('HttpUtils', [ '$http', '$q', 'UrlHelper',
             send: function(request) {
                 var deferred = $q.defer();
 
+                if(request.method != 'GET' && 'form-data' == request.tabName) {
+                    return this.sendFormData(request);
+                }
+
                 var data = request.data;
                 var headers = UrlHelper.urlParamConvert(request.headers);
                 if(request.method != 'GET' && 'x-www-form-urlencoded' == request.tabName) {
@@ -175,8 +179,37 @@ httpCraftServices.factory('HttpUtils', [ '$http', '$q', 'UrlHelper',
                     deferred.reject('not validate url!');
                 }
 
-                console.debug('promise');
+                return deferred.promise;
+            },
+
+            sendFormData: function(request) {
+                var deferred = $q.defer();
+                console.debug('FileUpload start ...');
+                var formData=new FormData();
+                angular.forEach(request.formParams, function (param) {
+                    if(param.key) formData.append(param.key, param.value);
+                });
+
+                $http.post(request.url, formData, {
+                    transformRequest: angular.identity,
+                    headers: {
+                        'Content-Type': undefined
+                    }
+                }).success(function(data, status, headers) {
+                    deferred.resolve({
+                        data: data,
+                        status: status,
+                        headers: headers()
+                    });
+                }).error(function(data, status, headers) {
+                    deferred.resolve({
+                        data: data,
+                        status: status,
+                        headers: headers()
+                    });
+                });
                 return deferred.promise;
             }
+
         }
     }]);
