@@ -129,7 +129,8 @@
                                 <div class="col-sm-12">
                                     <button class="btn btn-primary" id="btn-send" data-loading-text="Loading..." type="submit">Send</button>
                                     <a class="btn btn-success" ng-show="!currentRequest.uuid" ng-click="saveRequest()">Save</a>
-                                    <a class="btn btn-info" ng-show="currentRequest.uuid" ng-click="saveRequest()">Update</a>
+                                    <a class="btn btn-success" ng-show="currentRequest.uuid" ng-click="saveRequest()">Update</a>
+                                    <a class="btn btn-info" ng-show="currentRequest.uuid" ng-click="saveAsRequest()">Save As</a>
                                     <a class="btn btn-warning pull-right" ng-click="reset();">New Request</a>
                                 </div>
                             </div>

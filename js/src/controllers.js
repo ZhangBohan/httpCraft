@@ -103,15 +103,16 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
             $location.path('/save')
         };
 
+        $scope.saveAsRequest = function() {
+            var request = angular.copy($scope.currentRequest);
+            RequestStorage.setData($rootScope.currentKey, request);
+            $location.path('/save')
+        };
+
         $scope.getTips = function(searchText) {
             var tips = [];
             angular.forEach($scope.savedRequests, function (request) {
-                if(request.name && request.name.match(searchText)) {
-                    if(notRepeat(tips, request.url)) tips.push(request.url);
-
-                } else if(request.url && request.url.match(searchText)){
-                    if(notRepeat(tips, request.url)) tips.push(request.url);
-                } else if(request.description && request.description.match(searchText)){
+                if(request.url && request.url.match(searchText)){
                     if(notRepeat(tips, request.url)) tips.push(request.url);
                 }
             });
