@@ -79,12 +79,15 @@ httpCraftServices.factory('RequestStorage', ['$q', '$rootScope', '$timeout', fun
             chrome.storage.sync.get(key, function(value) {
                 $timeout(function() {
                     $rootScope.$apply(function () {
-                        var result = value[key];
-                        console.debug('get from storage:', result, 'key:', key);
-                        if(!result) {
+                        var result;
+                        if(!value || !value[key]) {
                             console.debug('init from defaultValue:', defaultValue);
                             result = angular.copy(defaultValue);
+                        } else if(value[key]) {
+                            result = value[key];
                         }
+
+                        console.debug('get from storage:', result, 'key:', key);
                         deferred.resolve(result);
                     });
                 });
@@ -98,28 +101,6 @@ httpCraftServices.factory('RequestStorage', ['$q', '$rootScope', '$timeout', fun
             console.debug('set data, key:', key, ', value:', value);
             var a = {};
             a[key] = value;
-            chrome.storage.sync.set(a, function() {
-                $timeout(function() {
-                    $rootScope.$apply(function () {
-                        deferred.resolve();
-                    });
-                });
-
-            });
-
-            return deferred.promise;
-        },
-
-        setArrayData: function(arrayData) {
-            var deferred = $q.defer();
-
-            console.debug('set arrayData:', arrayData);
-            var a = {};
-            for(var i = 0; i < arrayData.length; i++) {
-                var data = arrayData[i];
-                a[data.key] = data.value;
-            }
-            console.debug('a', a);
             chrome.storage.sync.set(a, function() {
                 $timeout(function() {
                     $rootScope.$apply(function () {
@@ -188,6 +169,7 @@ httpCraftServices.factory('HttpUtils', [ '$http', '$q', 'UrlHelper',
                 var formData=new FormData();
                 angular.forEach(request.formParams, function (param) {
                     if(param.key) formData.append(param.key, param.value);
+                    if(param.value instanceof File) param.value = undefined;
                 });
 
                 $http.post(request.url, formData, {

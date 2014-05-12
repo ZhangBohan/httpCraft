@@ -10,7 +10,7 @@ var httpCraft = angular.module('httpCraft', [
         DELETE: {name: 'DELETE', css: 'label-danger'}
     };
 
-    $rootScope.currentKey = 'currentRequest';
+    $rootScope.currentKey = 'cRequest';
     $rootScope.historyKey = 'historyRequests';
     $rootScope.saveKey = 'savedRequests';
 });

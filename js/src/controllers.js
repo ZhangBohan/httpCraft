@@ -29,11 +29,12 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
                 $scope.status = result.status;
                 $('#btn-send').button('reset');
 
-                RequestStorage.setData('currentRequest', $scope.currentRequest);
+                RequestStorage.setData($rootScope.currentKey, $scope.currentRequest);
                 RequestStorage.getData($rootScope.historyKey, []).then(function(historyRequests) {
                     console.log('hrs:', historyRequests, 'key:', $rootScope.historyKey);
                     $scope.currentRequest.createdAt = new Date().getTime();
-                    historyRequests.push($scope.currentRequest);
+                    var request = angular.copy($scope.currentRequest);
+                    historyRequests.push(request);
                     $scope.historyRequests = historyRequests;
                     RequestStorage.setData($rootScope.historyKey, historyRequests);
                 });
@@ -100,7 +101,7 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
         $scope.saveRequest = function() {
             RequestStorage.setData($rootScope.currentKey, $scope.currentRequest);
             $location.path('/save')
-        }
+        };
 
         $scope.getTips = function(searchText) {
             var tips = [];
@@ -121,6 +122,11 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
             });
 
             return tips;
+        };
+
+        $scope.urlSelected = function(url) {
+            $scope.currentRequest = RequestStorage.defaultRequest;
+            $scope.currentRequest.url = url;
         };
 
         var notRepeat = function (array, value) {
