@@ -64,19 +64,22 @@ httpCraftServices.factory('RequestStorage', ['$q', '$rootScope', '$timeout', fun
             "description": "",
             "url": "",
             "urlParams": [{}],
-            "headers": [],
+            "headers": [{}],
             "method": "GET",
             "tabName": "x-www-form-urlencoded",
             "data": "",
             "formParams": [{}],
             "xFormParams": [{}],
-            "responseData": {}
+            "responseData": {},
+            "actions": {
+                "urlParams": true
+            }
         },
 
         getData: function(key, defaultValue) {
             var deferred = $q.defer();
 
-            chrome.storage.sync.get(key, function(value) {
+            chrome.storage.local.get(key, function(value) {
                 $timeout(function() {
                     $rootScope.$apply(function () {
                         var result;
@@ -101,7 +104,7 @@ httpCraftServices.factory('RequestStorage', ['$q', '$rootScope', '$timeout', fun
             console.debug('set data, key:', key, ', value:', value);
             var a = {};
             a[key] = value;
-            chrome.storage.sync.set(a, function() {
+            chrome.storage.local.set(a, function() {
                 $timeout(function() {
                     $rootScope.$apply(function () {
                         deferred.resolve();
@@ -127,7 +130,7 @@ httpCraftServices.factory('HttpUtils', [ '$http', '$q', 'UrlHelper',
                 }
 
                 var data = request.data;
-                var headers = UrlHelper.urlParamConvert(request.headers);
+                var headers = this.arrayConverter(request.headers);
                 if(request.method != 'GET' && 'x-www-form-urlencoded' == request.tabName) {
                     console.debug('x-www-form-urlencoded request');
                     headers['Content-Type'] = 'application/x-www-form-urlencoded';
@@ -172,11 +175,16 @@ httpCraftServices.factory('HttpUtils', [ '$http', '$q', 'UrlHelper',
                     if(param.value instanceof File) param.value = undefined;
                 });
 
-                $http.post(request.url, formData, {
+                var headers = this.arrayConverter(request.headers);
+                headers['Content-Type'] = undefined;
+
+                $http({
+                    method: request.method,
+                    url: UrlHelper.urlFix(request.url),
+                    params: UrlHelper.urlParamConvert(request.urlParams),
+                    data: formData,
                     transformRequest: angular.identity,
-                    headers: {
-                        'Content-Type': undefined
-                    }
+                    headers: headers
                 }).success(function(data, status, headers) {
                     deferred.resolve({
                         data: data,
@@ -191,6 +199,14 @@ httpCraftServices.factory('HttpUtils', [ '$http', '$q', 'UrlHelper',
                     });
                 });
                 return deferred.promise;
+            },
+
+            arrayConverter: function (headers) {
+                var a = {};
+                angular.forEach(headers, function (header) {
+                    if(header.key) a[header.key] = header.value;
+                });
+                return a;
             }
 
         }

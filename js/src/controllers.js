@@ -61,6 +61,20 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
             }
         };
 
+        $scope.changeHeaderParam = function(index) {
+            // auto add form
+            if(index + 1 == $scope.currentRequest.headers.length) {
+                $scope.currentRequest.headers.push({});
+            }
+        };
+
+        $scope.delHeaderParams = function(index) {
+            $scope.currentRequest.headers.splice(index, 1);
+            if($scope.currentRequest.headers.length == 0) {
+                $scope.currentRequest.headers.push({});
+            }
+        };
+
         $scope.changeFormParam = function(index) {
             // auto add form
             if(index + 1 == $scope.currentRequest.formParams.length) {
