@@ -139,6 +139,11 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
             return tips;
         };
 
+        $scope.deleteRequest = function(index) {
+            $scope.savedRequests.splice($scope.savedRequests.length - index - 1, 1);
+            RequestStorage.setData($rootScope.saveKey, $scope.savedRequests);
+        };
+
         var notRepeat = function (array, value) {
             for(var i = 0; i < array.length; i++) {
                 if(array[i] == value) {

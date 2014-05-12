@@ -2,7 +2,7 @@
     <tabset>
         <tab heading="History">
             <ul class="list-unstyled">
-                <li ng-repeat="request in historyRequests track by $index | orderBy:'-createdAt':false">
+                <li ng-repeat="request in historyRequests | orderBy:'-createdAt':false">
                     <span class="label {{requestMethods[request.method].css}}">{{request.method}}</span>
                     <a href="" class="btn-link" ng-click="clickHistory(request);">
                         {{request.url}}
@@ -12,11 +12,12 @@
         </tab>
         <tab heading="Saved">
             <ul class="list-unstyled">
-                <li ng-repeat="request in savedRequests track by $index | orderBy:'-createdAt':false">
+                <li ng-repeat="request in savedRequests | orderBy:'-createdAt':false">
                     <span class="label {{requestMethods[request.method].css}}">{{request.method}}</span>
-                    <a href="" class="btn-link" ng-click="clickHistory(request);">
+                    <a href="" class="btn-link" ng-click="clickHistory(request)">
                         {{request.name}}
                     </a>
+                    <a href=""><i class="fa fa-times" ng-click="deleteRequest($index)"></i></a>
                 </li>
             </ul>
         </tab>
