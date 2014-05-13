@@ -9,21 +9,23 @@
             </ol>
             <!--<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>-->
             <div class="panel panel-default">
-                <div class="panel-heading" ng-show="currentRequest.uuid" ng-click="detailIsCollapsed = !detailIsCollapsed">
-                    {{currentRequest.name}}
+                <div ng-show="currentRequest.uuid">
+                    <div class="panel-heading" ng-click="detailIsCollapsed = !detailIsCollapsed">
+                        {{currentRequest.name}}
 
-                    <a ng-if="!detailIsCollapsed" class="pull-right">
-                        Show Details
-                        <i class="fa fa-arrow-circle-o-down fa-2x"></i>
-                    </a>
-                    <a ng-if="detailIsCollapsed" class="pull-right">
-                        Hide Details
-                        <i class="fa fa-arrow-circle-o-up fa-2x"></i>
-                    </a>
-                </div>
-                <div class="panel-body" ng-show="detailIsCollapsed">
-                    <p class="text-muted">This Request is Created At: {{currentRequest.createdAt | date:'yyyy-MM-dd HH:mm:ss Z'}}</p>
-                    {{currentRequest.description}}
+                        <a ng-if="!detailIsCollapsed" class="pull-right">
+                            Show Details
+                            <i class="fa fa-arrow-circle-o-down fa-2x"></i>
+                        </a>
+                        <a ng-if="detailIsCollapsed" class="pull-right">
+                            Hide Details
+                            <i class="fa fa-arrow-circle-o-up fa-2x"></i>
+                        </a>
+                    </div>
+                    <div class="panel-body" ng-show="detailIsCollapsed">
+                        <p class="text-muted">This Request is Created At: {{currentRequest.createdAt | date:'yyyy-MM-dd HH:mm:ss Z'}}</p>
+                        {{currentRequest.description}}
+                    </div>
                 </div>
                 <div class="list-group">
                     <div class="list-group-item">
