@@ -136,6 +136,9 @@ httpCraftServices.factory('HttpUtils', [ '$http', '$q', 'UrlHelper',
                     headers['Content-Type'] = 'application/x-www-form-urlencoded';
                     data = $.param(UrlHelper.urlParamConvert(request.xFormParams));
                 }
+                if(request.username && request.password) {
+                    headers['Authorization'] = 'Basic ' + Base64.encode(request.username + ':' + request.password);
+                }
                 console.debug('request:', request, 'data:', data, 'headers:', headers);
                 if(UrlHelper.urlValidate(request.url)) {
                     $http({

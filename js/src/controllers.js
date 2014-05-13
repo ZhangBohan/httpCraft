@@ -23,10 +23,11 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
             $('#btn-send').button('loading');
             HttpUtils.send($scope.currentRequest).then(function(result) {
                 console.debug('result:', result);
-                $scope.result = result.data;
-                $scope.resultHtml = HtmlHelper(result.data);
-                $scope.headers = result.headers;
-                $scope.status = result.status;
+                $scope.response = {};
+                $scope.response.result = result.data;
+                $scope.response.resultHtml = HtmlHelper(result.data);
+                $scope.response.headers = result.headers;
+                $scope.response.status = result.status;
                 $('#btn-send').button('reset');
 
                 RequestStorage.setData($rootScope.currentKey, $scope.currentRequest);
@@ -35,6 +36,9 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
                     $scope.currentRequest.createdAt = new Date().getTime();
                     var request = angular.copy($scope.currentRequest);
                     historyRequests.push(request);
+                    if(historyRequests.length > 50) {
+                        historyRequests.shift();
+                    }
                     $scope.historyRequests = historyRequests;
                     RequestStorage.setData($rootScope.historyKey, historyRequests);
                 });
@@ -105,6 +109,7 @@ httpCraftControllers.controller('APICtrl', ['$scope', '$http', 'HttpUtils',
 
         $scope.reset = function() {
             $scope.currentRequest = angular.copy(RequestStorage.defaultRequest);
+            $scope.response = undefined;
         };
 
         $scope.clickHistory = function(request) {
