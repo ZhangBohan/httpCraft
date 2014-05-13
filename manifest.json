@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "HTTP Craft",
     "description": "A Chrome apps Manage API simpleness",
-    "version": "0.2",
+    "version": "0.3",
     "app": {
         "background": {
             "scripts": ["js/main.js"]
