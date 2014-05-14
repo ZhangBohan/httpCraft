@@ -24,7 +24,7 @@
                     </div>
                     <div class="panel-body" ng-show="detailIsCollapsed">
                         <p class="text-muted">This Request is Created At: {{currentRequest.createdAt | date:'yyyy-MM-dd HH:mm:ss Z'}}</p>
-                        {{currentRequest.description}}
+                        <div ng-bind-html="currentRequest.description | markdown"></div>
                     </div>
                 </div>
                 <div class="list-group">
