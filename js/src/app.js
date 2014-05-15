@@ -13,6 +13,7 @@ var httpCraft = angular.module('httpCraft', [
     $rootScope.currentKey = 'cRequest';
     $rootScope.historyKey = 'historyRequests';
     $rootScope.saveKey = 'savedRequests';
+    $rootScope.categoriesKey = 'categories';
 });
 
 httpCraft.
