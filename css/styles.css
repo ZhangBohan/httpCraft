@@ -2,6 +2,15 @@ html {
     overflow: auto;
 }
 
+body {
+    -webkit-touch-callout: all;
+    -webkit-user-select: all;
+    -khtml-user-select: all;
+    -moz-user-select: all;
+    -ms-user-select: all;
+    user-select: all;
+}
+
 .break-line {
     word-wrap: break-word;
 }

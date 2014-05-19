@@ -176,6 +176,10 @@ httpCraftControllers.controller('NewAPICtrl', ['$scope', 'RequestStorage', '$loc
                 $scope.savedRequests = requests;
             });
 
+            RequestStorage.getData($rootScope.categoriesKey, []).then(function (categories) {
+                $scope.categories = categories;
+            });
+
             $scope.clickHistory = function(request) {
                 $scope.currentRequest = angular.copy(request);
                 RequestStorage.setData($rootScope.currentKey, $scope.currentRequest).then(function () {
@@ -200,6 +204,18 @@ httpCraftControllers.controller('NewAPICtrl', ['$scope', 'RequestStorage', '$loc
                         }
                     }
 
+                    var flag = false;
+                    for(var i = 0; i < $scope.categories.length; i++) {
+                        if($scope.categories[i] == $scope.currentRequest.category) {
+                            return true;
+                        }
+                    }
+
+                    if(!flag) {
+                        $scope.categories.push($scope.currentRequest.category);
+                        RequestStorage.setData($rootScope.categoriesKey, $scope.categories);
+                    }
+
                     $scope.currentRequest.updatedAt = new Date().getTime();
                     requests.push($scope.currentRequest);
 
@@ -207,6 +223,8 @@ httpCraftControllers.controller('NewAPICtrl', ['$scope', 'RequestStorage', '$loc
                         RequestStorage.setData($rootScope.currentKey, $scope.currentRequest).then(function () {
                             $rootScope.alerts.push({type: 'success', msg: '保存成功'});
                             $location.path('/');
+                        }, function (error) {
+                            console.debug('error:', error);
                         })
                     });
                 });
