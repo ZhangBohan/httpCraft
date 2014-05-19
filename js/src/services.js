@@ -214,3 +214,15 @@ httpCraftServices.factory('HttpUtils', [ '$http', '$q', 'UrlHelper',
 
         }
     }]);
+
+
+httpCraftServices.factory('Categories', [ '$sce',
+    function($sce){
+        return function(content) {
+            if(!(typeof content == 'string')) {
+                content = JSON.stringify(content);
+            }
+
+            return $sce.trustAsHtml(content);
+        }
+    }]);
