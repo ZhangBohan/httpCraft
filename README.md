@@ -1,2 +1,2 @@
 # HTTP Craft
-A Chrome apps Manage API simpleness
+A Open Source Chrome apps Manage API simpleness
