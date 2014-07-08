@@ -124,6 +124,10 @@ httpCraftServices.factory('HttpUtils', [ '$http', '$q', 'UrlHelper',
         return {
             send: function(request) {
                 var deferred = $q.defer();
+                if(!UrlHelper.urlValidate(request.url)) {
+                    deferred.reject('not validate url!');
+                    return deferred.promise;
+                }
 
                 if(request.method != 'GET' && 'form-data' == request.tabName) {
                     return this.sendFormData(request);
@@ -140,31 +144,25 @@ httpCraftServices.factory('HttpUtils', [ '$http', '$q', 'UrlHelper',
                     headers['Authorization'] = 'Basic ' + Base64.encode(request.username + ':' + request.password);
                 }
                 console.debug('request:', request, 'data:', data, 'headers:', headers);
-                if(UrlHelper.urlValidate(request.url)) {
-                    $http({
-                        method: request.method,
-                        url: UrlHelper.urlFix(request.url),
-                        params: UrlHelper.urlParamConvert(request.urlParams),
+                $http({
+                    method: request.method,
+                    url: UrlHelper.urlFix(request.url),
+                    params: UrlHelper.urlParamConvert(request.urlParams),
+                    data: data,
+                    headers: headers
+                }).success(function(data, status, headers) {
+                    deferred.resolve({
                         data: data,
-                        headers: headers
-                    }).success(function(data, status, headers) {
-                        deferred.resolve({
-                            data: data,
-                            status: status,
-                            headers: headers()
-                        });
-                    }).error(function(data, status, headers) {
-                        deferred.resolve({
-                            data: data,
-                            status: status,
-                            headers: headers()
-                        });
+                        status: status,
+                        headers: headers()
                     });
-
-
-                } else {
-                    deferred.reject('not validate url!');
-                }
+                }).error(function(data, status, headers) {
+                    deferred.resolve({
+                        data: data,
+                        status: status,
+                        headers: headers()
+                    });
+                });
 
                 return deferred.promise;
             },
